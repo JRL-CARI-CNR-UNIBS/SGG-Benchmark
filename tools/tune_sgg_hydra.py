@@ -38,7 +38,14 @@ import numpy as np
 import torch
 from omegaconf import DictConfig, OmegaConf, open_dict
 from optuna.samplers import TPESampler
+
+import ray
 from ray import train, tune
+from ray.tune.logger import (
+    CSVLoggerCallback,
+    JsonLoggerCallback,
+    TBXLoggerCallback,
+)
 from ray.tune.schedulers import ASHAScheduler
 from ray.tune.search.optuna import OptunaSearch
 
@@ -133,9 +140,8 @@ SEARCH_SPACE: Dict[str, Dict[str, Any]] = {
     },
 
     # Detector/post-processing examples.
-    # These keys exist in the Hydra schema, but their actual effect depends on
-    # the selected detector/meta-architecture. In particular, verify that the
-    # GeneralizedYOLO path really reads each parameter you decide to tune.
+    # Verify that the selected detector/meta-architecture actually reads
+    # every parameter you decide to tune.
     "model.backbone.nms_thresh": {
         "type": "loguniform",
         "low": 1.0e-4,
@@ -248,10 +254,12 @@ def ensure_path_exists(cfg: DictConfig, path: str) -> Any:
     """Return the current value and fail clearly when a config path is invalid."""
     normalized = normalize_path(path)
     value = OmegaConf.select(cfg, normalized, default=_MISSING)
+
     if value is _MISSING:
         raise KeyError(
             f"Config path '{path}' does not exist in the merged Hydra config."
         )
+
     return value
 
 
@@ -264,9 +272,12 @@ def apply_overrides(
     """Apply flat dot-path overrides to an OmegaConf DictConfig."""
     for raw_path, value in overrides.items():
         path = normalize_path(raw_path)
+
         if validate:
             ensure_path_exists(cfg, path)
+
         OmegaConf.update(cfg, path, value, merge=False)
+
     return cfg
 
 
@@ -276,12 +287,15 @@ def set_task_mode(cfg: DictConfig, task: str) -> None:
         if task == "sgdet":
             cfg.model.roi_relation_head.use_gt_box = False
             cfg.model.roi_relation_head.use_gt_object_label = False
+
         elif task == "sgcls":
             cfg.model.roi_relation_head.use_gt_box = True
             cfg.model.roi_relation_head.use_gt_object_label = False
+
         elif task == "predcls":
             cfg.model.roi_relation_head.use_gt_box = True
             cfg.model.roi_relation_head.use_gt_object_label = True
+
         else:
             raise ValueError(f"Unknown task: {task}")
 
@@ -329,6 +343,11 @@ def build_config(
             # Cached predictions would make post-processing trials incomparable.
             cfg.test.allow_load_from_cache = False
 
+    # Ray workers do not necessarily expose a real terminal stream.
+    # This avoids sys.stdout.isatty() errors in SGG-Benchmark's trainer.
+    with open_dict(cfg.solver):
+        cfg.solver.detached_logging = True
+
     return cfg
 
 
@@ -369,8 +388,10 @@ def numeric_mean(value: Any) -> float:
         raise ValueError(f"Metric contains no numeric values: {value!r}")
 
     result = float(np.mean(numbers))
+
     if not math.isfinite(result):
         raise ValueError(f"Metric is not finite: {result}")
+
     return result
 
 
@@ -386,16 +407,19 @@ def resolve_metric_key(
         return explicit_metric_key
 
     metric = requested_metric or str(cfg.metric_to_track)
+
     if metric in METRIC_SUFFIXES:
         return mode + METRIC_SUFFIXES[metric]
 
     # Permit direct keys or suffixes for custom metrics.
     if metric.startswith(mode):
         return metric
+
     if metric.startswith("_"):
         return mode + metric
 
     supported = ", ".join(METRIC_SUFFIXES)
+
     raise ValueError(
         f"Unknown metric '{metric}'. Use one of [{supported}] or pass "
         "--metric-key with the exact key returned by validation."
@@ -425,6 +449,7 @@ def build_slow_heads(cfg: DictConfig) -> list[str]:
                 "roi_heads.relation.union_feature_extractor.feature_extractor",
             ]
         )
+
     elif predictor == "SquatPredictor":
         slow_heads.append(
             "roi.heads.relation.predictor.context_layer.mask_predictor"
@@ -450,6 +475,7 @@ def prepare_model_for_relation_training(model: torch.nn.Module) -> None:
         model.backbone.eval()
 
     relation = getattr(getattr(model, "roi_heads", None), "relation", None)
+
     if relation is not None:
         for parameter in relation.parameters():
             parameter.requires_grad = True
@@ -491,6 +517,7 @@ def configure_trial(
     context = tune.get_context()
     trial_dir = Path(context.get_trial_dir()).resolve()
     trial_id = context.get_trial_id()
+
     output_dir = trial_dir / "sgg"
     mkdir(str(output_dir))
 
@@ -515,33 +542,39 @@ def configure_trial(
         steps=True,
     )
 
-    logger.info("Trial overrides:\n%s", json.dumps(
-        trial_config["overrides"],
-        indent=2,
-        default=str,
-    ))
+    logger.info(
+        "Trial overrides:\n%s",
+        json.dumps(
+            trial_config["overrides"],
+            indent=2,
+            default=str,
+        ),
+    )
 
-    # The official Hydra training flow loads the training dataset first so that
-    # object and predicate class counts can be inferred from it.
+    # Load the training dataset first so class counts can be inferred.
     train_loader = make_data_loader(
         cfg,
         mode="train",
         is_distributed=False,
     )
+
     if isinstance(train_loader, (list, tuple)):
         if len(train_loader) != 1:
             raise RuntimeError(
                 "Expected one training loader, got "
                 f"{len(train_loader)} loaders."
             )
+
         train_loader = train_loader[0]
 
     dataset = train_loader.dataset
+
     num_obj_classes = (
         len(dataset.ind_to_classes)
         if hasattr(dataset, "ind_to_classes")
         else int(cfg.model.roi_box_head.num_classes)
     )
+
     num_rel_classes = (
         len(dataset.ind_to_predicates)
         if hasattr(dataset, "ind_to_predicates")
@@ -569,6 +602,7 @@ def configure_trial(
 
     raw_iters = len(train_loader)
     max_iter = int(getattr(cfg.solver, "max_iter", 0))
+
     iters_per_epoch = (
         min(raw_iters, max_iter)
         if max_iter > 0
@@ -583,13 +617,18 @@ def configure_trial(
     )
 
     use_amp = str(cfg.dtype).lower() == "float16"
-    scaler = torch.amp.GradScaler("cuda", enabled=use_amp)
+
+    scaler = torch.amp.GradScaler(
+        "cuda",
+        enabled=use_amp,
+    )
 
     val_loaders = make_data_loader(
         cfg,
         mode="val",
         is_distributed=False,
     )
+
     if not isinstance(val_loaders, (list, tuple)):
         val_loaders = [val_loaders]
 
@@ -602,9 +641,13 @@ def configure_trial(
         logger,
     )
 
-    pretrained = str(cfg.model.get("pretrained_detector_ckpt", "") or "")
+    pretrained = str(
+        cfg.model.get("pretrained_detector_ckpt", "") or ""
+    )
+
     if pretrained:
         pretrained_path = Path(pretrained)
+
         if not pretrained_path.is_absolute():
             pretrained_path = Path(project_root) / pretrained_path
 
@@ -615,9 +658,9 @@ def configure_trial(
             )
 
         logger.info(
-            "Loading pretrained backbone detector from: %s",
-            pretrained_path,
+            f"Loading pretrained backbone detector from: {pretrained_path}"
         )
+
         checkpointer.load_backbone(str(pretrained_path))
 
     prepare_model_for_relation_training(model)
@@ -683,6 +726,7 @@ def train_trial(
         )
 
         mode = get_mode(cfg)
+
         metric_key = resolve_metric_key(
             cfg=cfg,
             mode=mode,
@@ -692,6 +736,7 @@ def train_trial(
 
         best_score = initial_best(objective_mode)
         previous_checkpoint: Path | None = None
+
         max_epoch = int(cfg.solver.max_epoch)
         use_amp = str(cfg.dtype).lower() == "float16"
 
@@ -722,7 +767,10 @@ def train_trial(
             )
 
             if metric_key not in val_result:
-                available = ", ".join(sorted(str(key) for key in val_result))
+                available = ", ".join(
+                    sorted(str(key) for key in val_result)
+                )
+
                 raise KeyError(
                     f"Validation metric '{metric_key}' was not returned. "
                     f"Available keys: {available}"
@@ -736,6 +784,7 @@ def train_trial(
 
                 if save_checkpoints:
                     checkpoint_name = f"tune_best_epoch_{epoch}"
+
                     checkpointer.save(
                         checkpoint_name,
                         epoch=epoch,
@@ -743,18 +792,25 @@ def train_trial(
                         metric_key=metric_key,
                     )
 
-                    new_checkpoint = output_dir / f"{checkpoint_name}.pth"
+                    new_checkpoint = (
+                        output_dir / f"{checkpoint_name}.pth"
+                    )
+
                     if (
                         previous_checkpoint is not None
                         and previous_checkpoint != new_checkpoint
                         and previous_checkpoint.exists()
                     ):
                         previous_checkpoint.unlink()
+
                     previous_checkpoint = new_checkpoint
 
             # Iter-based schedulers are stepped inside train_one_epoch.
             if not getattr(scheduler, "_is_iter_based", False):
-                if str(cfg.solver.schedule.type) == "WarmupReduceLROnPlateau":
+                if (
+                    str(cfg.solver.schedule.type)
+                    == "WarmupReduceLROnPlateau"
+                ):
                     scheduler.step(score, epoch=epoch)
                 else:
                     scheduler.step()
@@ -773,7 +829,12 @@ def train_trial(
     except torch.cuda.OutOfMemoryError:
         # Treat OOM configurations as very poor observations instead of
         # terminating the complete tuning run.
-        bad_score = -1.0e30 if objective_mode == "max" else 1.0e30
+        bad_score = (
+            -1.0e30
+            if objective_mode == "max"
+            else 1.0e30
+        )
+
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
 
@@ -782,7 +843,11 @@ def train_trial(
                 "score": bad_score,
                 "best_score": bad_score,
                 "epoch": 0,
-                "metric_key": explicit_metric_key or requested_metric or "",
+                "metric_key": (
+                    explicit_metric_key
+                    or requested_metric
+                    or ""
+                ),
                 "lr": float("nan"),
                 "oom": 1,
             }
@@ -791,7 +856,9 @@ def train_trial(
     finally:
         if model is not None:
             del model
+
         gc.collect()
+
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
 
@@ -808,20 +875,32 @@ def validate_user_configuration(
 ) -> None:
     """Fail before starting Ray if an override path or distribution is invalid."""
     cfg = load_config_from_file(config_file)
+
     if cli_opts:
         cfg = update_config_from_list(cfg, cli_opts)
+
     set_task_mode(cfg, task)
 
     print("\nFixed overrides:")
+
     for path, value in FIXED_OVERRIDES.items():
         old = ensure_path_exists(cfg, path)
-        print(f"  {normalize_path(path)}: {old!r} -> {value!r}")
+
+        print(
+            f"  {normalize_path(path)}: "
+            f"{old!r} -> {value!r}"
+        )
+
     apply_overrides(cfg, FIXED_OVERRIDES)
 
     print("\nTunable parameters:")
+
     for path, spec in SEARCH_SPACE.items():
         old = ensure_path_exists(cfg, path)
-        make_domain(spec)  # validates the distribution specification
+
+        # Validate the distribution specification.
+        make_domain(spec)
+
         print(
             f"  {normalize_path(path)}: current={old!r}, "
             f"distribution={dict(spec)!r}"
@@ -843,12 +922,16 @@ def save_best_artifacts(
     objective_mode: str,
 ) -> None:
     """Save the best overrides and a full-training YAML based on the winner."""
-    experiment_dir.mkdir(parents=True, exist_ok=True)
+    experiment_dir.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
 
-    best_overrides = dict(best_result.config["overrides"])
+    best_overrides = dict(
+        best_result.config["overrides"]
+    )
 
-    # This config preserves the original YAML training duration. Tuning-only
-    # max_epochs/max_images limits are deliberately not copied into it.
+    # Preserve the original YAML training duration.
     best_cfg = build_config(
         config_file=config_file,
         cli_opts=cli_opts,
@@ -859,7 +942,11 @@ def save_best_artifacts(
         output_dir=None,
         apply_tuning_budget=False,
     )
-    OmegaConf.save(best_cfg, experiment_dir / "best_config_full_training.yaml")
+
+    OmegaConf.save(
+        best_cfg,
+        experiment_dir / "best_config_full_training.yaml",
+    )
 
     override_document = {
         "fixed_overrides": FIXED_OVERRIDES,
@@ -871,6 +958,7 @@ def save_best_artifacts(
             "score": best_result.metrics.get("score"),
         },
     }
+
     OmegaConf.save(
         OmegaConf.create(override_document),
         experiment_dir / "best_overrides.yaml",
@@ -885,18 +973,28 @@ def save_best_artifacts(
         "trial_path": str(best_result.path),
         "overrides": best_overrides,
     }
-    with (experiment_dir / "best_result.json").open("w", encoding="utf-8") as f:
-        json.dump(summary, f, indent=2, default=str)
+
+    with (
+        experiment_dir / "best_result.json"
+    ).open("w", encoding="utf-8") as file:
+        json.dump(
+            summary,
+            file,
+            indent=2,
+            default=str,
+        )
 
     try:
         best_result_df = best_result.metrics_dataframe
+
         if best_result_df is not None:
             best_result_df.to_csv(
                 experiment_dir / "best_trial_history.csv",
                 index=False,
             )
+
     except Exception:
-        # The exact Result API varies slightly across Ray 2.x releases.
+        # The exact Result API varies slightly across Ray versions.
         pass
 
 
@@ -907,16 +1005,19 @@ def parse_args() -> argparse.Namespace:
             "SGG-Benchmark."
         )
     )
+
     parser.add_argument(
         "--config-file",
         required=True,
         help="Path to the base Hydra YAML, for example REACT++.yaml.",
     )
+
     parser.add_argument(
         "--task",
         choices=["sgdet", "sgcls", "predcls"],
         default="sgdet",
     )
+
     parser.add_argument(
         "--metric",
         default=None,
@@ -925,6 +1026,7 @@ def parse_args() -> argparse.Namespace:
             "ng-mR. Defaults to metric_to_track in the YAML."
         ),
     )
+
     parser.add_argument(
         "--metric-key",
         default=None,
@@ -933,24 +1035,28 @@ def parse_args() -> argparse.Namespace:
             "Overrides --metric."
         ),
     )
+
     parser.add_argument(
         "--mode",
         choices=["max", "min"],
         default="max",
         help="Whether the objective score must be maximized or minimized.",
     )
+
     parser.add_argument(
         "--num-samples",
         type=int,
         default=30,
         help="Number of configurations requested from Optuna.",
     )
+
     parser.add_argument(
         "--max-epochs",
         type=int,
         default=5,
         help="Maximum epochs per tuning trial.",
     )
+
     parser.add_argument(
         "--max-images",
         type=int,
@@ -960,49 +1066,68 @@ def parse_args() -> argparse.Namespace:
             "Use 0 to process the complete training loader."
         ),
     )
+
     parser.add_argument(
         "--grace-period",
         type=int,
         default=1,
         help="Minimum reported epochs before ASHA may stop a trial.",
     )
+
     parser.add_argument(
         "--reduction-factor",
         type=int,
         default=3,
         help="ASHA reduction factor.",
     )
+
     parser.add_argument(
         "--cpus-per-trial",
         type=float,
         default=6,
     )
+
     parser.add_argument(
         "--gpus-per-trial",
         type=float,
         default=1,
     )
+
     parser.add_argument(
         "--max-concurrent-trials",
         type=int,
         default=None,
         help="Optional explicit concurrency limit.",
     )
+
     parser.add_argument(
         "--storage-path",
         default="./ray_results",
         help="Local directory used by Ray Tune.",
     )
+
+    parser.add_argument(
+        "--ray-temp-dir",
+        default=None,
+        help=(
+            "Directory for Ray session files and object spilling. "
+            "Defaults to <storage-path>/_ray_tmp. Put it on a filesystem "
+            "with sufficient free space."
+        ),
+    )
+
     parser.add_argument(
         "--experiment-name",
         default="sgg_hydra_tuning",
     )
+
     parser.add_argument(
         "--seed",
         type=int,
         default=42,
         help="Seed used by Optuna's TPE sampler.",
     )
+
     parser.add_argument(
         "--save-checkpoints",
         action="store_true",
@@ -1011,6 +1136,7 @@ def parse_args() -> argparse.Namespace:
             "to avoid large disk usage."
         ),
     )
+
     parser.add_argument(
         "--opts",
         nargs=argparse.REMAINDER,
@@ -1020,6 +1146,7 @@ def parse_args() -> argparse.Namespace:
             "--opts DTYPE float16 SOLVER.WEIGHT_DECAY 0.01"
         ),
     )
+
     return parser.parse_args()
 
 
@@ -1027,132 +1154,225 @@ def main() -> None:
     args = parse_args()
 
     if args.max_epochs < 1:
-        raise ValueError("--max-epochs must be at least 1.")
+        raise ValueError(
+            "--max-epochs must be at least 1."
+        )
+
     if args.num_samples < 1:
-        raise ValueError("--num-samples must be at least 1.")
-    if args.grace_period < 1 or args.grace_period > args.max_epochs:
+        raise ValueError(
+            "--num-samples must be at least 1."
+        )
+
+    if (
+        args.grace_period < 1
+        or args.grace_period > args.max_epochs
+    ):
         raise ValueError(
             "--grace-period must be between 1 and --max-epochs."
         )
+
     if args.reduction_factor <= 1:
-        raise ValueError("--reduction-factor must be greater than 1.")
-
-    config_file = str(Path(args.config_file).expanduser().resolve())
-    if not Path(config_file).is_file():
-        raise FileNotFoundError(f"Config file not found: {config_file}")
-
-    storage_path = Path(args.storage_path).expanduser().resolve()
-    storage_path.mkdir(parents=True, exist_ok=True)
-    experiment_dir = storage_path / args.experiment_name
-
-    validate_user_configuration(
-        config_file=config_file,
-        cli_opts=args.opts,
-        task=args.task,
-    )
-
-    param_space = {
-        "overrides": {
-            normalize_path(path): make_domain(spec)
-            for path, spec in SEARCH_SPACE.items()
-        }
-    }
-
-    sampler = TPESampler(seed=args.seed)
-    search_algorithm = OptunaSearch(
-        # metric="score",
-        # mode=args.mode,
-        sampler=sampler,
-    )
-
-    scheduler = ASHAScheduler(
-        time_attr="training_iteration",
-        # metric="score",
-        # mode=args.mode,
-        max_t=args.max_epochs,
-        grace_period=args.grace_period,
-        reduction_factor=args.reduction_factor,
-    )
-
-    tune_config_kwargs: Dict[str, Any] = {
-        "metric": "score",
-        "mode": args.mode,
-        "search_alg": search_algorithm,
-        "scheduler": scheduler,
-        "num_samples": args.num_samples,
-    }
-    if args.max_concurrent_trials is not None:
-        tune_config_kwargs["max_concurrent_trials"] = (
-            args.max_concurrent_trials
+        raise ValueError(
+            "--reduction-factor must be greater than 1."
         )
 
-    trainable = tune.with_parameters(
-        train_trial,
-        config_file=config_file,
-        cli_opts=args.opts,
-        task=args.task,
-        requested_metric=args.metric,
-        explicit_metric_key=args.metric_key,
-        objective_mode=args.mode,
-        max_epochs=args.max_epochs,
-        max_images=args.max_images,
-        project_root=str(PROJECT_ROOT),
-        save_checkpoints=args.save_checkpoints,
-    )
-    trainable = tune.with_resources(
-        trainable,
-        resources={
-            "cpu": args.cpus_per_trial,
-            "gpu": args.gpus_per_trial,
-        },
+    config_file = str(
+        Path(args.config_file).expanduser().resolve()
     )
 
-    tuner = tune.Tuner(
-        trainable,
-        param_space=param_space,
-        tune_config=tune.TuneConfig(**tune_config_kwargs),
-        run_config=RunConfig(
-            name=args.experiment_name,
-            storage_path=str(storage_path),
-            log_to_file=True,
-            verbose=1,
-        ),
+    if not Path(config_file).is_file():
+        raise FileNotFoundError(
+            f"Config file not found: {config_file}"
+        )
+
+    storage_path = (
+        Path(args.storage_path)
+        .expanduser()
+        .resolve()
     )
 
-    results = tuner.fit()
-    best_result = results.get_best_result(
-        metric="score",
-        mode=args.mode,
-        filter_nan_and_inf=True,
+    storage_path.mkdir(
+        parents=True,
+        exist_ok=True,
     )
 
-    save_best_artifacts(
-        best_result=best_result,
-        experiment_dir=experiment_dir,
-        config_file=config_file,
-        cli_opts=args.opts,
-        task=args.task,
-        requested_metric=args.metric,
-        explicit_metric_key=args.metric_key,
-        objective_mode=args.mode,
+    experiment_dir = (
+        storage_path / args.experiment_name
     )
+
+    ray_temp_dir = (
+        Path(args.ray_temp_dir).expanduser().resolve()
+        if args.ray_temp_dir
+        else storage_path / "_ray_tmp"
+    )
+
+    ray_spill_dir = (
+        ray_temp_dir / "object_spilling"
+    )
+
+    ray_temp_dir.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    ray_spill_dir.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    if not ray.is_initialized():
+        ray.init(
+            _temp_dir=str(ray_temp_dir),
+            object_spilling_directory=str(ray_spill_dir),
+        )
 
     try:
-        results.get_dataframe().to_csv(
-            experiment_dir / "all_trials.csv",
-            index=False,
+        validate_user_configuration(
+            config_file=config_file,
+            cli_opts=args.opts,
+            task=args.task,
         )
-    except Exception:
-        pass
 
-    print("\nBest trial")
-    print(f"  score: {best_result.metrics.get('score')}")
-    print(f"  metric key: {best_result.metrics.get('metric_key')}")
-    print(f"  trial path: {best_result.path}")
-    print("  overrides:")
-    for path, value in best_result.config["overrides"].items():
-        print(f"    {path}: {value}")
-    print(f"\nSaved summary in: {experiment_dir}")
+        param_space = {
+            "overrides": {
+                normalize_path(path): make_domain(spec)
+                for path, spec in SEARCH_SPACE.items()
+            }
+        }
+
+        sampler = TPESampler(
+            seed=args.seed
+        )
+
+        # metric and mode are intentionally omitted here.
+        # They are defined once in TuneConfig.
+        search_algorithm = OptunaSearch(
+            sampler=sampler,
+        )
+
+        # metric and mode are intentionally omitted here.
+        # They are defined once in TuneConfig.
+        scheduler = ASHAScheduler(
+            time_attr="training_iteration",
+            max_t=args.max_epochs,
+            grace_period=args.grace_period,
+            reduction_factor=args.reduction_factor,
+        )
+
+        tune_config_kwargs: Dict[str, Any] = {
+            "metric": "score",
+            "mode": args.mode,
+            "search_alg": search_algorithm,
+            "scheduler": scheduler,
+            "num_samples": args.num_samples,
+        }
+
+        if args.max_concurrent_trials is not None:
+            tune_config_kwargs["max_concurrent_trials"] = (
+                args.max_concurrent_trials
+            )
+
+        trainable = tune.with_parameters(
+            train_trial,
+            config_file=config_file,
+            cli_opts=args.opts,
+            task=args.task,
+            requested_metric=args.metric,
+            explicit_metric_key=args.metric_key,
+            objective_mode=args.mode,
+            max_epochs=args.max_epochs,
+            max_images=args.max_images,
+            project_root=str(PROJECT_ROOT),
+            save_checkpoints=args.save_checkpoints,
+        )
+
+        trainable = tune.with_resources(
+            trainable,
+            resources={
+                "cpu": args.cpus_per_trial,
+                "gpu": args.gpus_per_trial,
+            },
+        )
+
+        tuner = tune.Tuner(
+            trainable,
+            param_space=param_space,
+            tune_config=tune.TuneConfig(
+                **tune_config_kwargs
+            ),
+            run_config=RunConfig(
+                name=args.experiment_name,
+                storage_path=str(storage_path),
+
+                # Keep stdout as a normal stream. Ray's Tee wrapper caused
+                # SGG-Benchmark's sys.stdout.isatty() call to fail.
+                log_to_file=False,
+
+                verbose=1,
+
+                callbacks=[
+                    JsonLoggerCallback(),
+                    CSVLoggerCallback(),
+                    TBXLoggerCallback(),
+                ],
+            ),
+        )
+
+        results = tuner.fit()
+
+        best_result = results.get_best_result(
+            metric="score",
+            mode=args.mode,
+            filter_nan_and_inf=True,
+        )
+
+        save_best_artifacts(
+            best_result=best_result,
+            experiment_dir=experiment_dir,
+            config_file=config_file,
+            cli_opts=args.opts,
+            task=args.task,
+            requested_metric=args.metric,
+            explicit_metric_key=args.metric_key,
+            objective_mode=args.mode,
+        )
+
+        try:
+            results.get_dataframe().to_csv(
+                experiment_dir / "all_trials.csv",
+                index=False,
+            )
+
+        except Exception:
+            pass
+
+        print("\nBest trial")
+        print(
+            f"  score: "
+            f"{best_result.metrics.get('score')}"
+        )
+        print(
+            f"  metric key: "
+            f"{best_result.metrics.get('metric_key')}"
+        )
+        print(
+            f"  trial path: "
+            f"{best_result.path}"
+        )
+        print("  overrides:")
+
+        for path, value in (
+            best_result.config["overrides"].items()
+        ):
+            print(f"    {path}: {value}")
+
+        print(
+            f"\nSaved summary in: {experiment_dir}"
+        )
+
+    finally:
+        if ray.is_initialized():
+            ray.shutdown()
 
 
 if __name__ == "__main__":
