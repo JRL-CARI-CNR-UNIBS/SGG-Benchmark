@@ -400,7 +400,7 @@ class SGG_Model(object):
 
     def _pre_processing(self, image):
         # to cv2 format
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        # image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
         target = torch.LongTensor([-1])
         transform = build_transforms(self.cfg, is_train=False)
