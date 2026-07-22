@@ -40,7 +40,7 @@ from omegaconf import DictConfig, OmegaConf, open_dict
 from optuna.samplers import TPESampler
 
 import ray
-from ray import train, tune
+from ray import tune
 from ray.tune.logger import (
     CSVLoggerCallback,
     JsonLoggerCallback,
@@ -815,7 +815,7 @@ def train_trial(
                 else:
                     scheduler.step()
 
-            train.report(
+            tune.report(
                 {
                     "score": score,
                     "best_score": best_score,
@@ -838,7 +838,7 @@ def train_trial(
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
 
-        train.report(
+        tune.report(
             {
                 "score": bad_score,
                 "best_score": bad_score,
