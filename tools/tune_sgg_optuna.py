@@ -457,8 +457,9 @@ def build_config(
         # such as NMS or max detections are tuned.
         cfg.test.allow_load_from_cache = False
 
-        # train_one_epoch checks this instead of sys.stdout.isatty().
-        cfg.solver.detached_logging = True
+        # No Ray stdout wrapper is used in the Optuna-only runner.
+        # Keep the structured SolverConfig unchanged: normal Python streams
+        # already provide isatty(), so detached_logging is unnecessary.
 
     return cfg
 
