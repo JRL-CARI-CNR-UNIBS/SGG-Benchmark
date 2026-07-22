@@ -1060,15 +1060,15 @@ def main() -> None:
 
     sampler = TPESampler(seed=args.seed)
     search_algorithm = OptunaSearch(
-        # metric="score",
-        # mode=args.mode,
+        metric="score",
+        mode=args.mode,
         sampler=sampler,
     )
 
     scheduler = ASHAScheduler(
         time_attr="training_iteration",
-        # metric="score",
-        # mode=args.mode,
+        metric="score",
+        mode=args.mode,
         max_t=args.max_epochs,
         grace_period=args.grace_period,
         reduction_factor=args.reduction_factor,
