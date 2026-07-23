@@ -184,10 +184,16 @@ class ColorJitter(object):
         # torchvision ColorJitter expects a PIL Image; convert from numpy if needed
         is_numpy = isinstance(image, np.ndarray)
         if is_numpy:
-            image = PILImage.fromarray(image)
+            # Dataset images are loaded with OpenCV in BGR format.
+            # torchvision ColorJitter expects RGB semantics.
+            image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            image = PILImage.fromarray(image_rgb)
         image = self.color_jitter(image)
         if is_numpy:
-            image = np.array(image)
+            # Restore BGR because LetterBox and ToTensorYOLO expect an OpenCV-style
+            # BGR array; ToTensorYOLO will convert it to RGB before the model.
+            image_rgb = np.asarray(image)
+            image = cv2.cvtColor(image_rgb, cv2.COLOR_RGB2BGR)
         return image, target
 
 
