@@ -1,0 +1,293 @@
+2026-07-23 13:02:04.872 | INFO     | sgg_benchmark.utils.loggersetup_logger31 - Using loguru logger with level: INFO
+2026-07-23 13:02:05.153 | INFO     | sgg_benchmark.data.buildget_dataset_statistics224 - ----------------------------------------------------------------------------------------------------
+2026-07-23 13:02:05.153 | INFO     | sgg_benchmark.data.buildget_dataset_statistics225 - get dataset statistics...
+2026-07-23 13:02:05.153 | INFO     | sgg_benchmark.data.buildget_dataset_statistics239 - Unable to load data statistics from: /home/gino/projects/samu_test_ws/src/SGG-Benchmark/hyperparameter_optimization/reactpp_optuna_rebalanced1/trials/trial_00004/train/NV3_statistics.cache
+2026-07-23 13:02:05.184 | INFO     | sgg_benchmark.data.buildget_dataset_statistics261 - Save data statistics to: /home/gino/projects/samu_test_ws/src/SGG-Benchmark/hyperparameter_optimization/reactpp_optuna_rebalanced1/trials/trial_00004/train/NV3_statistics.cache
+2026-07-23 13:02:05.184 | INFO     | sgg_benchmark.data.buildget_dataset_statistics262 - ----------------------------------------------------------------------------------------------------
+2026-07-23 13:02:05.187 | INFO     | sgg_benchmark.data.buildget_dataset_statistics224 - ----------------------------------------------------------------------------------------------------
+2026-07-23 13:02:05.187 | INFO     | sgg_benchmark.data.buildget_dataset_statistics225 - get dataset statistics...
+2026-07-23 13:02:05.187 | INFO     | sgg_benchmark.data.buildget_dataset_statistics235 - Loading data statistics from: /home/gino/projects/samu_test_ws/src/SGG-Benchmark/hyperparameter_optimization/reactpp_optuna_rebalanced1/trials/trial_00004/train/NV3_statistics.cache
+2026-07-23 13:02:05.187 | INFO     | sgg_benchmark.data.buildget_dataset_statistics236 - ----------------------------------------------------------------------------------------------------
+2026-07-23 13:02:05.189 | INFO     | sgg_benchmark.data.buildget_dataset_statistics224 - ----------------------------------------------------------------------------------------------------
+2026-07-23 13:02:05.189 | INFO     | sgg_benchmark.data.buildget_dataset_statistics225 - get dataset statistics...
+2026-07-23 13:02:05.189 | INFO     | sgg_benchmark.data.buildget_dataset_statistics235 - Loading data statistics from: /home/gino/projects/samu_test_ws/src/SGG-Benchmark/hyperparameter_optimization/reactpp_optuna_rebalanced1/trials/trial_00004/train/NV3_statistics.cache
+2026-07-23 13:02:05.189 | INFO     | sgg_benchmark.data.buildget_dataset_statistics236 - ----------------------------------------------------------------------------------------------------
+2026-07-23 13:02:06.822 | INFO     | sgg_benchmark.solver.buildmake_lr_scheduler133 - [LR] WarmupCosineAnnealingIterLR: total_iters=310 (10 epochs × 31 iters/epoch ÷ 1 accum), warmup_iters=155 (5 warmup epoch(s)), eta_min=5.0e-07
+2026-07-23 13:02:06.826 | INFO     | __main__maybe_load_pretrained_backbone985 - Loading pretrained backbone detector from: /home/gino/projects/samu_test_ws/src/SGG-Benchmark/checkpoints/BACKBONES/NV3/best.pt
+2026-07-23 13:02:06.826 | INFO     | sgg_benchmark.utils.checkpointload_backbone193 - Loading backbone from /home/gino/projects/samu_test_ws/src/SGG-Benchmark/checkpoints/BACKBONES/NV3/best.pt
+2026-07-23 13:02:06.888 | INFO     | __main__objective1557 - Optuna trial 4: training epoch 1/10
+2026-07-23 13:02:41.436 | INFO     | sgg_benchmark.engine.inferenceinference282 - Start evaluation on  dataset(21 images).
+2026-07-23 13:02:49.439 | INFO     | sgg_benchmark.engine.inferenceinference301 - Total run time: 0:00:00 (15.109054429190499 ms / img per device, on 1 devices)
+2026-07-23 13:02:49.439 | INFO     | sgg_benchmark.engine.inferenceinference310 - Average latency per image: 15.109054429190499ms
+2026-07-23 13:02:49.439 | INFO     | sgg_benchmark.engine.inferenceinference313 - Standard deviation of latency: 1.7752258407762904ms
+2026-07-23 13:02:49.440 | INFO     | sgg_benchmark.data.buildget_dataset_statistics224 - ----------------------------------------------------------------------------------------------------
+2026-07-23 13:02:49.440 | INFO     | sgg_benchmark.data.buildget_dataset_statistics225 - get dataset statistics...
+2026-07-23 13:02:49.440 | INFO     | sgg_benchmark.data.buildget_dataset_statistics235 - Loading data statistics from: /home/gino/projects/samu_test_ws/src/SGG-Benchmark/hyperparameter_optimization/reactpp_optuna_rebalanced1/trials/trial_00004/train/NV3_statistics.cache
+2026-07-23 13:02:49.440 | INFO     | sgg_benchmark.data.buildget_dataset_statistics236 - ----------------------------------------------------------------------------------------------------
+2026-07-23 13:02:49.441 | INFO     | sgg_benchmark.data.datasets.evaluation.sgg_evaldo_sgg_evaluation35 - Dynamically loaded 8 seen triplets from training statistics for zero-shot evaluation.
+2026-07-23 13:02:49.480 | INFO     | sgg_benchmark.data.datasets.evaluation.sgg_evaldo_sgg_evaluation89 - 
+====================================================================================================
+Detection evaluation mAp=0.9714
+====================================================================================================
+SGG eval:     R @ 20: 0.5278;     R @ 50: 0.5278;     R @ 100: 0.5278;  for mode=sgdet.
+SGG eval:    mR @ 20: 0.6450;    mR @ 50: 0.6450;    mR @ 100: 0.6450;  for mode=sgdet.
+----------------------- Details ------------------------
+(off position:1.0000) (threaded on:0.6250) (torqued down:0.0909) (clamps:0.6667) (partially overlap:0.4444) (disengaged from:0.5000) (correctly seated on:1.0000) (incorrectly seated on:0.8333) 
+--------------------------------------------------------
+SGG eval:     zR @ 20: 0.0000;     zR @ 50: 0.0000;     zR @ 100: 0.0000;  for mode=sgdet.
+SGG eval:     F1 @ 20: 0.5805;     F1 @ 50: 0.5805;     F1 @ 100: 0.5805;  for mode=sgdet.
+====================================================================================================
+
+2026-07-23 13:02:49.487 | INFO     | sgg_benchmark.utils.checkpointsave174 - Saving checkpoint to /home/gino/projects/samu_test_ws/src/SGG-Benchmark/hyperparameter_optimization/reactpp_optuna_rebalanced1/trials/trial_00004/train/best_model_epoch_0.pth
+2026-07-23 13:02:49.616 | INFO     | __main__objective1557 - Optuna trial 4: training epoch 2/10
+2026-07-23 13:03:22.843 | INFO     | sgg_benchmark.engine.inferenceinference282 - Start evaluation on  dataset(21 images).
+2026-07-23 13:03:30.850 | INFO     | sgg_benchmark.engine.inferenceinference301 - Total run time: 0:00:00 (14.966683387756348 ms / img per device, on 1 devices)
+2026-07-23 13:03:30.850 | INFO     | sgg_benchmark.engine.inferenceinference310 - Average latency per image: 14.966683387756348ms
+2026-07-23 13:03:30.850 | INFO     | sgg_benchmark.engine.inferenceinference313 - Standard deviation of latency: 1.532204106261468ms
+2026-07-23 13:03:30.851 | INFO     | sgg_benchmark.data.buildget_dataset_statistics224 - ----------------------------------------------------------------------------------------------------
+2026-07-23 13:03:30.851 | INFO     | sgg_benchmark.data.buildget_dataset_statistics225 - get dataset statistics...
+2026-07-23 13:03:30.851 | INFO     | sgg_benchmark.data.buildget_dataset_statistics235 - Loading data statistics from: /home/gino/projects/samu_test_ws/src/SGG-Benchmark/hyperparameter_optimization/reactpp_optuna_rebalanced1/trials/trial_00004/train/NV3_statistics.cache
+2026-07-23 13:03:30.851 | INFO     | sgg_benchmark.data.buildget_dataset_statistics236 - ----------------------------------------------------------------------------------------------------
+2026-07-23 13:03:30.852 | INFO     | sgg_benchmark.data.datasets.evaluation.sgg_evaldo_sgg_evaluation35 - Dynamically loaded 8 seen triplets from training statistics for zero-shot evaluation.
+2026-07-23 13:03:30.892 | INFO     | sgg_benchmark.data.datasets.evaluation.sgg_evaldo_sgg_evaluation89 - 
+====================================================================================================
+Detection evaluation mAp=0.9714
+====================================================================================================
+SGG eval:     R @ 20: 0.6310;     R @ 50: 0.6310;     R @ 100: 0.6310;  for mode=sgdet.
+SGG eval:    mR @ 20: 0.7454;    mR @ 50: 0.7454;    mR @ 100: 0.7454;  for mode=sgdet.
+----------------------- Details ------------------------
+(off position:1.0000) (threaded on:0.7500) (torqued down:0.2727) (clamps:1.0000) (partially overlap:0.3333) (disengaged from:0.7500) (correctly seated on:0.8571) (incorrectly seated on:1.0000) 
+--------------------------------------------------------
+SGG eval:     zR @ 20: 0.0000;     zR @ 50: 0.0000;     zR @ 100: 0.0000;  for mode=sgdet.
+SGG eval:     F1 @ 20: 0.6834;     F1 @ 50: 0.6834;     F1 @ 100: 0.6834;  for mode=sgdet.
+====================================================================================================
+
+2026-07-23 13:03:30.898 | INFO     | sgg_benchmark.utils.checkpointsave174 - Saving checkpoint to /home/gino/projects/samu_test_ws/src/SGG-Benchmark/hyperparameter_optimization/reactpp_optuna_rebalanced1/trials/trial_00004/train/best_model_epoch_1.pth
+2026-07-23 13:03:31.040 | INFO     | __main__objective1557 - Optuna trial 4: training epoch 3/10
+2026-07-23 13:04:03.373 | INFO     | sgg_benchmark.engine.inferenceinference282 - Start evaluation on  dataset(21 images).
+2026-07-23 13:04:11.360 | INFO     | sgg_benchmark.engine.inferenceinference301 - Total run time: 0:00:00 (14.88809903462728 ms / img per device, on 1 devices)
+2026-07-23 13:04:11.360 | INFO     | sgg_benchmark.engine.inferenceinference310 - Average latency per image: 14.88809903462728ms
+2026-07-23 13:04:11.360 | INFO     | sgg_benchmark.engine.inferenceinference313 - Standard deviation of latency: 1.0689731023419722ms
+2026-07-23 13:04:11.362 | INFO     | sgg_benchmark.data.buildget_dataset_statistics224 - ----------------------------------------------------------------------------------------------------
+2026-07-23 13:04:11.362 | INFO     | sgg_benchmark.data.buildget_dataset_statistics225 - get dataset statistics...
+2026-07-23 13:04:11.362 | INFO     | sgg_benchmark.data.buildget_dataset_statistics235 - Loading data statistics from: /home/gino/projects/samu_test_ws/src/SGG-Benchmark/hyperparameter_optimization/reactpp_optuna_rebalanced1/trials/trial_00004/train/NV3_statistics.cache
+2026-07-23 13:04:11.362 | INFO     | sgg_benchmark.data.buildget_dataset_statistics236 - ----------------------------------------------------------------------------------------------------
+2026-07-23 13:04:11.362 | INFO     | sgg_benchmark.data.datasets.evaluation.sgg_evaldo_sgg_evaluation35 - Dynamically loaded 8 seen triplets from training statistics for zero-shot evaluation.
+2026-07-23 13:04:11.403 | INFO     | sgg_benchmark.data.datasets.evaluation.sgg_evaldo_sgg_evaluation89 - 
+====================================================================================================
+Detection evaluation mAp=0.9714
+====================================================================================================
+SGG eval:     R @ 20: 0.6706;     R @ 50: 0.6706;     R @ 100: 0.6706;  for mode=sgdet.
+SGG eval:    mR @ 20: 0.7771;    mR @ 50: 0.7771;    mR @ 100: 0.7771;  for mode=sgdet.
+----------------------- Details ------------------------
+(off position:1.0000) (threaded on:0.7500) (torqued down:0.2727) (clamps:1.0000) (partially overlap:0.4444) (disengaged from:0.7500) (correctly seated on:1.0000) (incorrectly seated on:1.0000) 
+--------------------------------------------------------
+SGG eval:     zR @ 20: 0.0000;     zR @ 50: 0.0000;     zR @ 100: 0.0000;  for mode=sgdet.
+SGG eval:     F1 @ 20: 0.7200;     F1 @ 50: 0.7200;     F1 @ 100: 0.7200;  for mode=sgdet.
+====================================================================================================
+
+2026-07-23 13:04:11.408 | INFO     | sgg_benchmark.utils.checkpointsave174 - Saving checkpoint to /home/gino/projects/samu_test_ws/src/SGG-Benchmark/hyperparameter_optimization/reactpp_optuna_rebalanced1/trials/trial_00004/train/best_model_epoch_2.pth
+2026-07-23 13:04:11.547 | INFO     | __main__objective1557 - Optuna trial 4: training epoch 4/10
+2026-07-23 13:04:43.702 | INFO     | sgg_benchmark.engine.inferenceinference282 - Start evaluation on  dataset(21 images).
+2026-07-23 13:04:51.708 | INFO     | sgg_benchmark.engine.inferenceinference301 - Total run time: 0:00:00 (15.030956177484422 ms / img per device, on 1 devices)
+2026-07-23 13:04:51.708 | INFO     | sgg_benchmark.engine.inferenceinference310 - Average latency per image: 15.030956177484422ms
+2026-07-23 13:04:51.708 | INFO     | sgg_benchmark.engine.inferenceinference313 - Standard deviation of latency: 1.3254657227379192ms
+2026-07-23 13:04:51.711 | INFO     | sgg_benchmark.data.buildget_dataset_statistics224 - ----------------------------------------------------------------------------------------------------
+2026-07-23 13:04:51.711 | INFO     | sgg_benchmark.data.buildget_dataset_statistics225 - get dataset statistics...
+2026-07-23 13:04:51.711 | INFO     | sgg_benchmark.data.buildget_dataset_statistics235 - Loading data statistics from: /home/gino/projects/samu_test_ws/src/SGG-Benchmark/hyperparameter_optimization/reactpp_optuna_rebalanced1/trials/trial_00004/train/NV3_statistics.cache
+2026-07-23 13:04:51.711 | INFO     | sgg_benchmark.data.buildget_dataset_statistics236 - ----------------------------------------------------------------------------------------------------
+2026-07-23 13:04:51.711 | INFO     | sgg_benchmark.data.datasets.evaluation.sgg_evaldo_sgg_evaluation35 - Dynamically loaded 8 seen triplets from training statistics for zero-shot evaluation.
+2026-07-23 13:04:51.753 | INFO     | sgg_benchmark.data.datasets.evaluation.sgg_evaldo_sgg_evaluation89 - 
+====================================================================================================
+Detection evaluation mAp=0.9714
+====================================================================================================
+SGG eval:     R @ 20: 0.7817;     R @ 50: 0.7817;     R @ 100: 0.7817;  for mode=sgdet.
+SGG eval:    mR @ 20: 0.8478;    mR @ 50: 0.8478;    mR @ 100: 0.8478;  for mode=sgdet.
+----------------------- Details ------------------------
+(off position:1.0000) (threaded on:1.0000) (torqued down:0.2727) (clamps:1.0000) (partially overlap:0.7778) (disengaged from:0.8750) (correctly seated on:0.8571) (incorrectly seated on:1.0000) 
+--------------------------------------------------------
+SGG eval:     zR @ 20: 0.0000;     zR @ 50: 0.0000;     zR @ 100: 0.0000;  for mode=sgdet.
+SGG eval:     F1 @ 20: 0.8134;     F1 @ 50: 0.8134;     F1 @ 100: 0.8134;  for mode=sgdet.
+====================================================================================================
+
+2026-07-23 13:04:51.759 | INFO     | sgg_benchmark.utils.checkpointsave174 - Saving checkpoint to /home/gino/projects/samu_test_ws/src/SGG-Benchmark/hyperparameter_optimization/reactpp_optuna_rebalanced1/trials/trial_00004/train/best_model_epoch_3.pth
+2026-07-23 13:04:51.897 | INFO     | __main__objective1557 - Optuna trial 4: training epoch 5/10
+2026-07-23 13:05:25.146 | INFO     | sgg_benchmark.engine.inferenceinference282 - Start evaluation on  dataset(21 images).
+2026-07-23 13:05:33.248 | INFO     | sgg_benchmark.engine.inferenceinference301 - Total run time: 0:00:00 (15.113385155087425 ms / img per device, on 1 devices)
+2026-07-23 13:05:33.248 | INFO     | sgg_benchmark.engine.inferenceinference310 - Average latency per image: 15.113385155087425ms
+2026-07-23 13:05:33.248 | INFO     | sgg_benchmark.engine.inferenceinference313 - Standard deviation of latency: 1.0015567192271422ms
+2026-07-23 13:05:33.250 | INFO     | sgg_benchmark.data.buildget_dataset_statistics224 - ----------------------------------------------------------------------------------------------------
+2026-07-23 13:05:33.250 | INFO     | sgg_benchmark.data.buildget_dataset_statistics225 - get dataset statistics...
+2026-07-23 13:05:33.250 | INFO     | sgg_benchmark.data.buildget_dataset_statistics235 - Loading data statistics from: /home/gino/projects/samu_test_ws/src/SGG-Benchmark/hyperparameter_optimization/reactpp_optuna_rebalanced1/trials/trial_00004/train/NV3_statistics.cache
+2026-07-23 13:05:33.250 | INFO     | sgg_benchmark.data.buildget_dataset_statistics236 - ----------------------------------------------------------------------------------------------------
+2026-07-23 13:05:33.251 | INFO     | sgg_benchmark.data.datasets.evaluation.sgg_evaldo_sgg_evaluation35 - Dynamically loaded 8 seen triplets from training statistics for zero-shot evaluation.
+2026-07-23 13:05:33.292 | INFO     | sgg_benchmark.data.datasets.evaluation.sgg_evaldo_sgg_evaluation89 - 
+====================================================================================================
+Detection evaluation mAp=0.9714
+====================================================================================================
+SGG eval:     R @ 20: 0.6825;     R @ 50: 0.6825;     R @ 100: 0.6825;  for mode=sgdet.
+SGG eval:    mR @ 20: 0.7748;    mR @ 50: 0.7748;    mR @ 100: 0.7748;  for mode=sgdet.
+----------------------- Details ------------------------
+(off position:1.0000) (threaded on:0.5000) (torqued down:0.5455) (clamps:1.0000) (partially overlap:0.4444) (disengaged from:0.8750) (correctly seated on:1.0000) (incorrectly seated on:0.8333) 
+--------------------------------------------------------
+SGG eval:     zR @ 20: 0.0000;     zR @ 50: 0.0000;     zR @ 100: 0.0000;  for mode=sgdet.
+SGG eval:     F1 @ 20: 0.7257;     F1 @ 50: 0.7257;     F1 @ 100: 0.7257;  for mode=sgdet.
+====================================================================================================
+
+2026-07-23 13:05:33.297 | INFO     | __main__objective1557 - Optuna trial 4: training epoch 6/10
+2026-07-23 13:06:06.120 | INFO     | sgg_benchmark.engine.inferenceinference282 - Start evaluation on  dataset(21 images).
+2026-07-23 13:06:14.121 | INFO     | sgg_benchmark.engine.inferenceinference301 - Total run time: 0:00:00 (14.688452584402901 ms / img per device, on 1 devices)
+2026-07-23 13:06:14.121 | INFO     | sgg_benchmark.engine.inferenceinference310 - Average latency per image: 14.688452584402901ms
+2026-07-23 13:06:14.121 | INFO     | sgg_benchmark.engine.inferenceinference313 - Standard deviation of latency: 0.7052132546326102ms
+2026-07-23 13:06:14.122 | INFO     | sgg_benchmark.data.buildget_dataset_statistics224 - ----------------------------------------------------------------------------------------------------
+2026-07-23 13:06:14.122 | INFO     | sgg_benchmark.data.buildget_dataset_statistics225 - get dataset statistics...
+2026-07-23 13:06:14.123 | INFO     | sgg_benchmark.data.buildget_dataset_statistics235 - Loading data statistics from: /home/gino/projects/samu_test_ws/src/SGG-Benchmark/hyperparameter_optimization/reactpp_optuna_rebalanced1/trials/trial_00004/train/NV3_statistics.cache
+2026-07-23 13:06:14.123 | INFO     | sgg_benchmark.data.buildget_dataset_statistics236 - ----------------------------------------------------------------------------------------------------
+2026-07-23 13:06:14.123 | INFO     | sgg_benchmark.data.datasets.evaluation.sgg_evaldo_sgg_evaluation35 - Dynamically loaded 8 seen triplets from training statistics for zero-shot evaluation.
+2026-07-23 13:06:14.164 | INFO     | sgg_benchmark.data.datasets.evaluation.sgg_evaldo_sgg_evaluation89 - 
+====================================================================================================
+Detection evaluation mAp=0.9714
+====================================================================================================
+SGG eval:     R @ 20: 0.7460;     R @ 50: 0.7460;     R @ 100: 0.7460;  for mode=sgdet.
+SGG eval:    mR @ 20: 0.8336;    mR @ 50: 0.8336;    mR @ 100: 0.8336;  for mode=sgdet.
+----------------------- Details ------------------------
+(off position:1.0000) (threaded on:0.8750) (torqued down:0.3636) (clamps:1.0000) (partially overlap:0.5556) (disengaged from:0.8750) (correctly seated on:1.0000) (incorrectly seated on:1.0000) 
+--------------------------------------------------------
+SGG eval:     zR @ 20: 0.0000;     zR @ 50: 0.0000;     zR @ 100: 0.0000;  for mode=sgdet.
+SGG eval:     F1 @ 20: 0.7874;     F1 @ 50: 0.7874;     F1 @ 100: 0.7874;  for mode=sgdet.
+====================================================================================================
+
+2026-07-23 13:06:14.168 | INFO     | __main__objective1557 - Optuna trial 4: training epoch 7/10
+2026-07-23 13:06:47.496 | INFO     | sgg_benchmark.engine.inferenceinference282 - Start evaluation on  dataset(21 images).
+2026-07-23 13:06:55.506 | INFO     | sgg_benchmark.engine.inferenceinference301 - Total run time: 0:00:00 (14.816775639851889 ms / img per device, on 1 devices)
+2026-07-23 13:06:55.506 | INFO     | sgg_benchmark.engine.inferenceinference310 - Average latency per image: 14.816775639851889ms
+2026-07-23 13:06:55.506 | INFO     | sgg_benchmark.engine.inferenceinference313 - Standard deviation of latency: 1.3961585644995897ms
+2026-07-23 13:06:55.508 | INFO     | sgg_benchmark.data.buildget_dataset_statistics224 - ----------------------------------------------------------------------------------------------------
+2026-07-23 13:06:55.508 | INFO     | sgg_benchmark.data.buildget_dataset_statistics225 - get dataset statistics...
+2026-07-23 13:06:55.508 | INFO     | sgg_benchmark.data.buildget_dataset_statistics235 - Loading data statistics from: /home/gino/projects/samu_test_ws/src/SGG-Benchmark/hyperparameter_optimization/reactpp_optuna_rebalanced1/trials/trial_00004/train/NV3_statistics.cache
+2026-07-23 13:06:55.508 | INFO     | sgg_benchmark.data.buildget_dataset_statistics236 - ----------------------------------------------------------------------------------------------------
+2026-07-23 13:06:55.509 | INFO     | sgg_benchmark.data.datasets.evaluation.sgg_evaldo_sgg_evaluation35 - Dynamically loaded 8 seen triplets from training statistics for zero-shot evaluation.
+2026-07-23 13:06:55.550 | INFO     | sgg_benchmark.data.datasets.evaluation.sgg_evaldo_sgg_evaluation89 - 
+====================================================================================================
+Detection evaluation mAp=0.9714
+====================================================================================================
+SGG eval:     R @ 20: 0.7738;     R @ 50: 0.7738;     R @ 100: 0.7738;  for mode=sgdet.
+SGG eval:    mR @ 20: 0.8518;    mR @ 50: 0.8518;    mR @ 100: 0.8518;  for mode=sgdet.
+----------------------- Details ------------------------
+(off position:1.0000) (threaded on:1.0000) (torqued down:0.2727) (clamps:1.0000) (partially overlap:0.6667) (disengaged from:0.8750) (correctly seated on:1.0000) (incorrectly seated on:1.0000) 
+--------------------------------------------------------
+SGG eval:     zR @ 20: 0.0000;     zR @ 50: 0.0000;     zR @ 100: 0.0000;  for mode=sgdet.
+SGG eval:     F1 @ 20: 0.8109;     F1 @ 50: 0.8109;     F1 @ 100: 0.8109;  for mode=sgdet.
+====================================================================================================
+
+2026-07-23 13:06:55.555 | INFO     | sgg_benchmark.utils.checkpointsave174 - Saving checkpoint to /home/gino/projects/samu_test_ws/src/SGG-Benchmark/hyperparameter_optimization/reactpp_optuna_rebalanced1/trials/trial_00004/train/best_model_epoch_6.pth
+2026-07-23 13:06:55.698 | INFO     | __main__objective1557 - Optuna trial 4: training epoch 8/10
+2026-07-23 13:07:27.751 | INFO     | sgg_benchmark.engine.inferenceinference282 - Start evaluation on  dataset(21 images).
+2026-07-23 13:07:35.764 | INFO     | sgg_benchmark.engine.inferenceinference301 - Total run time: 0:00:00 (14.492784772600446 ms / img per device, on 1 devices)
+2026-07-23 13:07:35.764 | INFO     | sgg_benchmark.engine.inferenceinference310 - Average latency per image: 14.492784772600446ms
+2026-07-23 13:07:35.764 | INFO     | sgg_benchmark.engine.inferenceinference313 - Standard deviation of latency: 0.9461614417443261ms
+2026-07-23 13:07:35.765 | INFO     | sgg_benchmark.data.buildget_dataset_statistics224 - ----------------------------------------------------------------------------------------------------
+2026-07-23 13:07:35.765 | INFO     | sgg_benchmark.data.buildget_dataset_statistics225 - get dataset statistics...
+2026-07-23 13:07:35.765 | INFO     | sgg_benchmark.data.buildget_dataset_statistics235 - Loading data statistics from: /home/gino/projects/samu_test_ws/src/SGG-Benchmark/hyperparameter_optimization/reactpp_optuna_rebalanced1/trials/trial_00004/train/NV3_statistics.cache
+2026-07-23 13:07:35.765 | INFO     | sgg_benchmark.data.buildget_dataset_statistics236 - ----------------------------------------------------------------------------------------------------
+2026-07-23 13:07:35.766 | INFO     | sgg_benchmark.data.datasets.evaluation.sgg_evaldo_sgg_evaluation35 - Dynamically loaded 8 seen triplets from training statistics for zero-shot evaluation.
+2026-07-23 13:07:35.808 | INFO     | sgg_benchmark.data.datasets.evaluation.sgg_evaldo_sgg_evaluation89 - 
+====================================================================================================
+Detection evaluation mAp=0.9714
+====================================================================================================
+SGG eval:     R @ 20: 0.7698;     R @ 50: 0.7698;     R @ 100: 0.7698;  for mode=sgdet.
+SGG eval:    mR @ 20: 0.8529;    mR @ 50: 0.8529;    mR @ 100: 0.8529;  for mode=sgdet.
+----------------------- Details ------------------------
+(off position:1.0000) (threaded on:0.6250) (torqued down:0.5455) (clamps:1.0000) (partially overlap:0.7778) (disengaged from:0.8750) (correctly seated on:1.0000) (incorrectly seated on:1.0000) 
+--------------------------------------------------------
+SGG eval:     zR @ 20: 0.0000;     zR @ 50: 0.0000;     zR @ 100: 0.0000;  for mode=sgdet.
+SGG eval:     F1 @ 20: 0.8092;     F1 @ 50: 0.8092;     F1 @ 100: 0.8092;  for mode=sgdet.
+====================================================================================================
+
+2026-07-23 13:07:35.813 | INFO     | sgg_benchmark.utils.checkpointsave174 - Saving checkpoint to /home/gino/projects/samu_test_ws/src/SGG-Benchmark/hyperparameter_optimization/reactpp_optuna_rebalanced1/trials/trial_00004/train/best_model_epoch_7.pth
+2026-07-23 13:07:35.953 | INFO     | __main__objective1557 - Optuna trial 4: training epoch 9/10
+2026-07-23 13:08:08.943 | INFO     | sgg_benchmark.engine.inferenceinference282 - Start evaluation on  dataset(21 images).
+2026-07-23 13:08:16.962 | INFO     | sgg_benchmark.engine.inferenceinference301 - Total run time: 0:00:00 (14.552496728442964 ms / img per device, on 1 devices)
+2026-07-23 13:08:16.962 | INFO     | sgg_benchmark.engine.inferenceinference310 - Average latency per image: 14.552496728442964ms
+2026-07-23 13:08:16.962 | INFO     | sgg_benchmark.engine.inferenceinference313 - Standard deviation of latency: 0.6269865387883771ms
+2026-07-23 13:08:16.964 | INFO     | sgg_benchmark.data.buildget_dataset_statistics224 - ----------------------------------------------------------------------------------------------------
+2026-07-23 13:08:16.964 | INFO     | sgg_benchmark.data.buildget_dataset_statistics225 - get dataset statistics...
+2026-07-23 13:08:16.964 | INFO     | sgg_benchmark.data.buildget_dataset_statistics235 - Loading data statistics from: /home/gino/projects/samu_test_ws/src/SGG-Benchmark/hyperparameter_optimization/reactpp_optuna_rebalanced1/trials/trial_00004/train/NV3_statistics.cache
+2026-07-23 13:08:16.964 | INFO     | sgg_benchmark.data.buildget_dataset_statistics236 - ----------------------------------------------------------------------------------------------------
+2026-07-23 13:08:16.964 | INFO     | sgg_benchmark.data.datasets.evaluation.sgg_evaldo_sgg_evaluation35 - Dynamically loaded 8 seen triplets from training statistics for zero-shot evaluation.
+2026-07-23 13:08:17.006 | INFO     | sgg_benchmark.data.datasets.evaluation.sgg_evaldo_sgg_evaluation89 - 
+====================================================================================================
+Detection evaluation mAp=0.9714
+====================================================================================================
+SGG eval:     R @ 20: 0.8095;     R @ 50: 0.8095;     R @ 100: 0.8095;  for mode=sgdet.
+SGG eval:    mR @ 20: 0.8824;    mR @ 50: 0.8824;    mR @ 100: 0.8824;  for mode=sgdet.
+----------------------- Details ------------------------
+(off position:1.0000) (threaded on:0.7500) (torqued down:0.5455) (clamps:1.0000) (partially overlap:0.8889) (disengaged from:0.8750) (correctly seated on:1.0000) (incorrectly seated on:1.0000) 
+--------------------------------------------------------
+SGG eval:     zR @ 20: 0.0000;     zR @ 50: 0.0000;     zR @ 100: 0.0000;  for mode=sgdet.
+SGG eval:     F1 @ 20: 0.8444;     F1 @ 50: 0.8444;     F1 @ 100: 0.8444;  for mode=sgdet.
+====================================================================================================
+
+2026-07-23 13:08:17.012 | INFO     | sgg_benchmark.utils.checkpointsave174 - Saving checkpoint to /home/gino/projects/samu_test_ws/src/SGG-Benchmark/hyperparameter_optimization/reactpp_optuna_rebalanced1/trials/trial_00004/train/best_model_epoch_8.pth
+2026-07-23 13:08:17.154 | INFO     | __main__objective1557 - Optuna trial 4: training epoch 10/10
+2026-07-23 13:08:50.261 | INFO     | sgg_benchmark.engine.inferenceinference282 - Start evaluation on  dataset(21 images).
+2026-07-23 13:08:58.261 | INFO     | sgg_benchmark.engine.inferenceinference301 - Total run time: 0:00:00 (14.69749641418457 ms / img per device, on 1 devices)
+2026-07-23 13:08:58.261 | INFO     | sgg_benchmark.engine.inferenceinference310 - Average latency per image: 14.69749641418457ms
+2026-07-23 13:08:58.261 | INFO     | sgg_benchmark.engine.inferenceinference313 - Standard deviation of latency: 0.8536946376218837ms
+2026-07-23 13:08:58.263 | INFO     | sgg_benchmark.data.buildget_dataset_statistics224 - ----------------------------------------------------------------------------------------------------
+2026-07-23 13:08:58.263 | INFO     | sgg_benchmark.data.buildget_dataset_statistics225 - get dataset statistics...
+2026-07-23 13:08:58.263 | INFO     | sgg_benchmark.data.buildget_dataset_statistics235 - Loading data statistics from: /home/gino/projects/samu_test_ws/src/SGG-Benchmark/hyperparameter_optimization/reactpp_optuna_rebalanced1/trials/trial_00004/train/NV3_statistics.cache
+2026-07-23 13:08:58.263 | INFO     | sgg_benchmark.data.buildget_dataset_statistics236 - ----------------------------------------------------------------------------------------------------
+2026-07-23 13:08:58.263 | INFO     | sgg_benchmark.data.datasets.evaluation.sgg_evaldo_sgg_evaluation35 - Dynamically loaded 8 seen triplets from training statistics for zero-shot evaluation.
+2026-07-23 13:08:58.306 | INFO     | sgg_benchmark.data.datasets.evaluation.sgg_evaldo_sgg_evaluation89 - 
+====================================================================================================
+Detection evaluation mAp=0.9714
+====================================================================================================
+SGG eval:     R @ 20: 0.7857;     R @ 50: 0.7857;     R @ 100: 0.7857;  for mode=sgdet.
+SGG eval:    mR @ 20: 0.8685;    mR @ 50: 0.8685;    mR @ 100: 0.8685;  for mode=sgdet.
+----------------------- Details ------------------------
+(off position:1.0000) (threaded on:0.7500) (torqued down:0.5455) (clamps:1.0000) (partially overlap:0.7778) (disengaged from:0.8750) (correctly seated on:1.0000) (incorrectly seated on:1.0000) 
+--------------------------------------------------------
+SGG eval:     zR @ 20: 0.0000;     zR @ 50: 0.0000;     zR @ 100: 0.0000;  for mode=sgdet.
+SGG eval:     F1 @ 20: 0.8250;     F1 @ 50: 0.8250;     F1 @ 100: 0.8250;  for mode=sgdet.
+====================================================================================================
+
+2026-07-23 13:08:58.697 | INFO     | sgg_benchmark.data.buildget_dataset_statistics224 - ----------------------------------------------------------------------------------------------------
+2026-07-23 13:08:58.697 | INFO     | sgg_benchmark.data.buildget_dataset_statistics225 - get dataset statistics...
+2026-07-23 13:08:58.697 | INFO     | sgg_benchmark.data.buildget_dataset_statistics239 - Unable to load data statistics from: /home/gino/projects/samu_test_ws/src/SGG-Benchmark/hyperparameter_optimization/reactpp_optuna_rebalanced1/trials/trial_00004/evaluation_test/NV3_statistics.cache
+2026-07-23 13:08:58.729 | INFO     | sgg_benchmark.data.buildget_dataset_statistics261 - Save data statistics to: /home/gino/projects/samu_test_ws/src/SGG-Benchmark/hyperparameter_optimization/reactpp_optuna_rebalanced1/trials/trial_00004/evaluation_test/NV3_statistics.cache
+2026-07-23 13:08:58.729 | INFO     | sgg_benchmark.data.buildget_dataset_statistics262 - ----------------------------------------------------------------------------------------------------
+2026-07-23 13:08:58.732 | INFO     | sgg_benchmark.data.buildget_dataset_statistics224 - ----------------------------------------------------------------------------------------------------
+2026-07-23 13:08:58.732 | INFO     | sgg_benchmark.data.buildget_dataset_statistics225 - get dataset statistics...
+2026-07-23 13:08:58.732 | INFO     | sgg_benchmark.data.buildget_dataset_statistics235 - Loading data statistics from: /home/gino/projects/samu_test_ws/src/SGG-Benchmark/hyperparameter_optimization/reactpp_optuna_rebalanced1/trials/trial_00004/evaluation_test/NV3_statistics.cache
+2026-07-23 13:08:58.732 | INFO     | sgg_benchmark.data.buildget_dataset_statistics236 - ----------------------------------------------------------------------------------------------------
+2026-07-23 13:08:58.734 | INFO     | sgg_benchmark.data.buildget_dataset_statistics224 - ----------------------------------------------------------------------------------------------------
+2026-07-23 13:08:58.734 | INFO     | sgg_benchmark.data.buildget_dataset_statistics225 - get dataset statistics...
+2026-07-23 13:08:58.734 | INFO     | sgg_benchmark.data.buildget_dataset_statistics235 - Loading data statistics from: /home/gino/projects/samu_test_ws/src/SGG-Benchmark/hyperparameter_optimization/reactpp_optuna_rebalanced1/trials/trial_00004/evaluation_test/NV3_statistics.cache
+2026-07-23 13:08:58.734 | INFO     | sgg_benchmark.data.buildget_dataset_statistics236 - ----------------------------------------------------------------------------------------------------
+2026-07-23 13:09:00.367 | INFO     | __main__evaluate_checkpoint_fresh1130 - Post-training evaluation checkpoint: /home/gino/projects/samu_test_ws/src/SGG-Benchmark/hyperparameter_optimization/reactpp_optuna_rebalanced1/trials/trial_00004/train/best_model_epoch_8.pth
+2026-07-23 13:09:00.367 | INFO     | sgg_benchmark.utils.checkpointload63 - Loading checkpoint from /home/gino/projects/samu_test_ws/src/SGG-Benchmark/hyperparameter_optimization/reactpp_optuna_rebalanced1/trials/trial_00004/train/best_model_epoch_8.pth
+2026-07-23 13:09:00.532 | INFO     | __main__evaluate_checkpoint_fresh1216 - Independent evaluation on NV3_test (split=test)
+2026-07-23 13:09:00.532 | INFO     | sgg_benchmark.engine.inferenceinference282 - Start evaluation on NV3_test dataset(141 images).
+2026-07-23 13:09:10.266 | INFO     | sgg_benchmark.engine.inferenceinference301 - Total run time: 0:00:01 (13.347458954398514 ms / img per device, on 1 devices)
+2026-07-23 13:09:10.266 | INFO     | sgg_benchmark.engine.inferenceinference310 - Average latency per image: 13.347458954398514ms
+2026-07-23 13:09:10.266 | INFO     | sgg_benchmark.engine.inferenceinference313 - Standard deviation of latency: 0.6219058278102282ms
+2026-07-23 13:09:10.268 | INFO     | sgg_benchmark.data.buildget_dataset_statistics224 - ----------------------------------------------------------------------------------------------------
+2026-07-23 13:09:10.268 | INFO     | sgg_benchmark.data.buildget_dataset_statistics225 - get dataset statistics...
+2026-07-23 13:09:10.268 | INFO     | sgg_benchmark.data.buildget_dataset_statistics235 - Loading data statistics from: /home/gino/projects/samu_test_ws/src/SGG-Benchmark/hyperparameter_optimization/reactpp_optuna_rebalanced1/trials/trial_00004/evaluation_test/NV3_statistics.cache
+2026-07-23 13:09:10.268 | INFO     | sgg_benchmark.data.buildget_dataset_statistics236 - ----------------------------------------------------------------------------------------------------
+2026-07-23 13:09:10.269 | INFO     | sgg_benchmark.data.datasets.evaluation.sgg_evaldo_sgg_evaluation35 - Dynamically loaded 8 seen triplets from training statistics for zero-shot evaluation.
+2026-07-23 13:09:10.519 | INFO     | sgg_benchmark.data.datasets.evaluation.sgg_evaldo_sgg_evaluation89 - 
+====================================================================================================
+Detection evaluation mAp=0.9892
+====================================================================================================
+SGG eval:     R @ 20: 0.8517;     R @ 50: 0.8517;     R @ 100: 0.8517;  for mode=sgdet.
+SGG eval:    mR @ 20: 0.8567;    mR @ 50: 0.8567;    mR @ 100: 0.8567;  for mode=sgdet.
+----------------------- Details ------------------------
+(off position:0.9583) (threaded on:0.7067) (torqued down:0.6111) (clamps:0.9200) (partially overlap:0.8605) (disengaged from:0.9375) (correctly seated on:0.9792) (incorrectly seated on:0.8800) 
+--------------------------------------------------------
+SGG eval:     zR @ 20: 0.0000;     zR @ 50: 0.0000;     zR @ 100: 0.0000;  for mode=sgdet.
+SGG eval:     F1 @ 20: 0.8541;     F1 @ 50: 0.8541;     F1 @ 100: 0.8541;  for mode=sgdet.
+====================================================================================================
+
+2026-07-23 13:09:10.641 | INFO     | __main__objective1775 - Optuna objective from fresh checkpoint evaluation: 0.856655

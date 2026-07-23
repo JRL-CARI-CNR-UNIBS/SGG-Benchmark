@@ -1,0 +1,15 @@
+{
+  "input.brightness": 0.29621472339773347,
+  "input.contrast": 0.09751373857885781,
+  "input.saturation": 0.0629475038865118,
+  "input.hue": 0.07399229610651568,
+  "model.backbone.nms_thresh": 0.0593881102719873,
+  "model.roi_heads.fg_iou_threshold": 0.5405853450840548,
+  "model.roi_heads.nms": 0.36006556485602986,
+  "model.roi_heads.detections_per_img": 50,
+  "model.roi_relation_head.context_dropout_rate": 0.1471606196003467,
+  "model.roi_relation_head.batch_size_per_image": 64,
+  "model.roi_relation_head.positive_fraction": 0.5424216781493924,
+  "model.roi_relation_head.num_sample_per_gt_rel": 32,
+  "model.roi_relation_head.add_gtbox_to_proposal_in_train": true
+}
