@@ -61,3 +61,6 @@ output/
 # models/
 *.pt
 *.pth
+
+# hyperparameters
+/hyperparameter_optimization/**
