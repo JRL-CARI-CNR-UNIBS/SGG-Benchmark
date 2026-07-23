@@ -103,66 +103,100 @@ from sgg_benchmark.utils.miscellaneous import mkdir, set_seed  # noqa: E402
 # Every path is checked before Optuna starts.
 #
 SEARCH_SPACE: Dict[str, Dict[str, Any]] = {
-    # Optimizer/training parameters
-    "solver.base_lr": {
-        "type": "loguniform",
-        "low": 1.0e-5,
-        "high": 5.0e-4,
+    # =====================================================================
+    # DATA AUGMENTATION
+    # =====================================================================
+    #
+    # Intervalli volutamente moderati: alterazioni troppo forti possono
+    # modificare indizi visivi importanti per riconoscere le relazioni.
+    #
+    "input.brightness": {
+        "type": "uniform",
+        "low": 0.00,
+        "high": 0.30,
     },
-    "solver.ims_per_batch": {
-        "type": "choice",
-        "values": [2, 4, 8],
+    "input.contrast": {
+        "type": "uniform",
+        "low": 0.00,
+        "high": 0.30,
     },
-    "solver.accum_steps": {
-        "type": "choice",
-        "values": [1, 2, 4],
+    "input.saturation": {
+        "type": "uniform",
+        "low": 0.00,
+        "high": 0.25,
+    },
+    "input.hue": {
+        "type": "uniform",
+        "low": 0.00,
+        "high": 0.08,
     },
 
-    # Relation-head parameters
-    "model.roi_relation_head.batch_size_per_image": {
-        "type": "choice",
-        "values": [256, 512, 768, 1024],
+    # =====================================================================
+    # YOLO BACKBONE / DETECTOR
+    # =====================================================================
+    #
+    # Il parametro varia su più ordini di grandezza, quindi loguniform è
+    # più appropriato di uniform.
+    #
+    "model.backbone.nms_thresh": {
+        "type": "loguniform",
+        "low": 1.0e-3,
+        "high": 1.5e-1,
     },
-    "model.roi_relation_head.positive_fraction": {
+
+    # =====================================================================
+    # ROI HEADS / OBJECT DETECTION
+    # =====================================================================
+    "model.roi_heads.fg_iou_threshold": {
         "type": "uniform",
-        "low": 0.20,
-        "high": 0.50,
+        "low": 0.50,
+        "high": 0.85,
     },
+    "model.roi_heads.nms": {
+        "type": "uniform",
+        "low": 0.25,
+        "high": 0.60,
+    },
+    "model.roi_heads.detections_per_img": {
+        "type": "choice",
+        "values": [15, 25, 40, 50, 75, 100],
+    },
+
+    # =====================================================================
+    # RELATION HEAD
+    # =====================================================================
     "model.roi_relation_head.context_dropout_rate": {
         "type": "uniform",
         "low": 0.05,
         "high": 0.40,
     },
-    "model.roi_relation_head.loss.logit_adjustment_tau": {
-        "type": "uniform",
-        "low": 0.10,
-        "high": 1.00,
+    "model.roi_relation_head.batch_size_per_image": {
+        "type": "choice",
+        "values": [16, 32, 64, 128],
     },
-
-    # Detector/post-processing parameters
-    "model.backbone.nms_thresh": {
-        "type": "loguniform",
-        "low": 1.0e-4,
-        "high": 5.0e-2,
-    },
-    "model.roi_heads.nms": {
+    "model.roi_relation_head.positive_fraction": {
         "type": "uniform",
-        "low": 0.30,
-        "high": 0.70,
-    },
-    "model.roi_heads.fg_iou_threshold": {
-        "type": "uniform",
-        "low": 0.25,
+        "low": 0.20,
         "high": 0.55,
     },
-    "model.roi_heads.detections_per_img": {
+    "model.roi_relation_head.num_sample_per_gt_rel": {
         "type": "choice",
-        "values": [50, 75, 100, 150],
+        "values": [4, 8, 16, 24, 32],
     },
-    "test.detections_per_img": {
+    "model.roi_relation_head.add_gtbox_to_proposal_in_train": {
         "type": "choice",
-        "values": [50, 75, 100, 150],
+        "values": [False, True],
     },
+
+    # ATTENZIONE:
+    # non abilitare questo parametro se esegui tutti i trial con
+    # --task sgdet. Lo script set_task_mode() imposta use_gt_box=False
+    # per SGDet e sovrascrive il valore campionato.
+    #
+    # "model.roi_relation_head.use_gt_box": {
+    #     "type": "choice",
+    #     "values": [False, True],
+    # },
 }
 
 # Values always applied before sampled overrides.
@@ -2468,4 +2502,8 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    import multiprocessing as mp
+    mp.set_start_method("spawn", force=True)
+
+    
     main()

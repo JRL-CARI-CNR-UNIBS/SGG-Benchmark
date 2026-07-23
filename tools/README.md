@@ -222,3 +222,13 @@ SEARCH_SPACE: Dict[str, Dict[str, Any]] = {
     },
 }
 ```
+
+# Run hyperparameter optimization
+```bash
+python tools/tune_sgg_optuna.py   --config-file "/home/gino/projects/samu_test_ws/src/SGG-Benchmark/configs/hydra/NV3_v2/React++_Yolo12m_SGDet_v30.yaml"   --task sgdet   --metric mR   --metric-k 50   --mode max   --num-samples 1000   --max-epochs 5   --max-images 200   --internal-validation-split val   --evaluation-split test   --storage-path "hyperparameter_optimization"   --experiment-name reactpp_optuna_small_dataset_new_search_space
+
+```
+
+```bash
+python tools/tune_sgg_optuna.py   --config-file "/home/gino/projects/samu_test_ws/src/SGG-Benchmark/configs/hydra/NV3_v2/React++_Yolo12m_SGDet_v30_rebalanced.yaml"   --task sgdet   --metric mR   --metric-k 50   --mode max   --num-samples 1000   --max-epochs 10   --max-images 1200   --internal-validation-split val   --evaluation-split test   --storage-path "hyperparameter_optimization"   --experiment-name reactpp_optuna_rebalanced1
+```
