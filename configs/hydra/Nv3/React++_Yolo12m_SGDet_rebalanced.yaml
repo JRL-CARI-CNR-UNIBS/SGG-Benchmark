@@ -1,0 +1,164 @@
+# @package _global_
+# React++_Yolo12m_SGDet_rebalanced.yaml — REACT++ config for Rebalanced NV3 dataset
+# ════════════════════════════════════════════════════════════════════════════
+# Architecture : DAMP (Detection-Anchored Multi-Scale Pooling) + P5SceneContextExtractor
+# Object feats : DAMPBoxFeatureExtractor, P3+P4+P5 Gaussian r=1 neighbourhood
+# Relation head: REACTPlusPlusPredictor with AIFI scene-context branch
+#
+# Dataset: NV3 (Rebalanced & Augmented with horizontal, vertical, and combined flips)
+# Hardware: Optimized for NVIDIA RTX 4090 (24GB VRAM)
+
+output_dir: "./checkpoints/Nv3_rebalanced/react_pp"
+glove_dir: "datasets/"
+
+seed: 42
+metric_to_track: "mR"
+dtype: "bfloat16"                # float16 leverages Tensor Cores on RTX 4090 for speed & memory efficiency
+verbose: "INFO"
+
+input:
+  img_size: [640, 640]          # YOLO-style square resize [W, H]
+  pixel_mean: [102.9801, 115.9465, 122.7717]
+  pixel_std: [1.0, 1.0, 1.0]
+  to_bgr255: true
+  flip_prob_train: 0.0          # Flips are pre-computed in the dataset; set to 0.0 to prevent double-flipping
+  padding: true
+  brightness: 0.15
+  contrast: 0.15
+  saturation: 0.1
+  hue: 0.0                      # Kept at 0.0 to prevent distorting color-specific relations
+  vertical_flip_prob_train: 0.0
+
+datasets:
+  name: "Nv3_rebalanced"
+  type: "coco"
+  # Path to the directory containing rebalanced 'train', 'val', and 'test' subdirectories
+  data_dir: "datasets/NV3_rebalanced/coco_format"
+
+dataloader:
+  num_workers: 4                # Number of CPU data-loading workers
+  size_divisibility: 32
+  aspect_ratio_grouping: true
+
+model:
+  relation_on: true
+  device: "cuda"
+  meta_architecture: "GeneralizedYOLO"
+  # Path to the pretrained detector weights (trained on NV3 objects)
+  pretrained_detector_ckpt: "checkpoints/BACKBONES/NV3/best.pt"
+  text_embedding: "glove.6B"
+  box_head: false
+
+  backbone:
+    type: "yolo"
+    nms_thresh: 0.001
+    freeze: true
+    freeze_at: 10
+
+  yolo:
+    size: "yolo12m"             # YOLO model size
+    out_channels: [256, 512, 512]
+
+  roi_heads:
+    fg_iou_threshold: 0.35
+    nms: 0.5
+    detections_per_img: 25
+
+  roi_box_head:
+    feature_extractor: "DAMPBoxFeatureExtractor"
+    feat_idx_multiscale: true
+    feat_idx_neighbors: 1
+    mlp_head_dim: 256
+    num_classes: 5              # 4 object classes + 1 background class
+
+  roi_relation_head:
+    predictor: "REACTPlusPlusPredictor"
+    feature_extractor: "P5SceneContextExtractor"
+    use_scene_context: true
+    num_classes: 9              # 8 relation classes + 1 background class
+
+    mlp_head_dim: 512
+    embed_dim: 200
+    context_dropout_rate: 0.2
+
+    use_union_features: true
+    use_union_features_inference: true
+    union_dropout: 0.0
+
+    max_pairs_inference: 0
+
+    batch_size_per_image: 25 #100
+    positive_fraction: 0.2 #0.35
+    num_sample_per_gt_rel: 8
+    require_box_overlap: false
+    add_gtbox_to_proposal_in_train: true
+
+    use_gt_box: false
+    use_gt_object_label: false
+
+    loss:
+      loss_type: "BalancedLogitAdjustedLoss"
+      logit_adjustment_tau: 0.5
+      gamma: 0.0
+      alpha: 0.15
+      fg_boost: 2.0
+      bg_discount: 0.3
+
+    use_frequency_bias: false
+
+    react_loss_weights:
+      l21_loss: 1.0
+      dist_loss2: 0.1
+      loss_dis: 0.5
+
+solver:
+  max_epoch: 30                 # Increased from 20 to allow model to converge on small dataset (~800 iterations total)
+  base_lr: 1.0e-04 #2.0e-04              # Base learning rate scaled for effective batch size 32
+  bias_lr_factor: 1
+  momentum: 0.3 #0.9
+  weight_decay_bias: 0.0
+  gamma: 0.5
+  steps: [600, 750]             # Scaled down to match ~800 total iterations (326 imgs / 32 batch_size * 80 epochs)
+  warmup_factor: 0.1
+  warmup_epochs: 5              # Increased warmup epochs to stabilize early training
+  warmup_method: "linear"
+  checkpoint_period: 100        # Saved every 100 steps (~10 epochs) instead of 250
+  grad_norm_clip: 1.0
+  accum_steps: 2                # 16 batch size * 2 accumulation steps = 32 effective batch size
+  print_grad_freq: 50
+  pre_val: true
+  val_period: 100               # Evaluate every 10 epochs
+  ims_per_batch: 16             # Batch size per GPU (16 fits comfortably in RTX 4090 VRAM)
+  optimizer: "ADAMW"
+  muon_scaling: 0.2
+  adamw_scaling: 0.8
+  slow_ratio: 10.0
+  weight_decay: 0.05
+
+  schedule:
+    type: "WarmupCosineAnnealingIterLR"
+    eta_min: 5.0e-7
+
+test:
+  ims_per_batch: 1
+  detections_per_img: 100
+  informative: false
+
+  bbox_aug:
+    enabled: false
+    h_flip: false
+    scales: []
+    max_size: 4000
+    scale_h_flip: false
+
+  save_proposals: false
+
+  relation:
+    multiple_preds: false
+    iou_threshold: 0.5
+    require_overlap: false
+    later_nms_prediction_thres: 0.5
+    sync_gather: true
+
+  allow_load_from_cache: false
+  top_k: 100

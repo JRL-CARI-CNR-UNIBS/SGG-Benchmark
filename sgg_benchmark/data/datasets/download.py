@@ -204,4 +204,8 @@ def download_dataset(
 
     if not save_images:
         print("\n⚠  Images were NOT downloaded.  You need to supply them separately.")
-        print(cfg["image_note"])
+        if "image_note" in cfg:
+            print(cfg["image_note"])
+        else:
+            print(f"To download them automatically from Hugging Face, run:\n"
+                  f"  python tools/download_from_hub.py --dataset {dataset_name} --save-images")
